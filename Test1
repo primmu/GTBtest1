@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Request Portal</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #login, #portal { margin-top: 20px; }
+        .hidden { display: none; }
+        table { border-collapse: collapse; margin-top: 10px; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        input, select, textarea { padding: 5px; margin: 5px 0; }
+        button { padding: 5px 10px; margin-top: 5px; }
+        #loginMsg { color: red; margin-top: 10px; }
+        #submitMsg { color: green; margin-top: 10px; }
+    </style>
+</head>
+<body>
+<h2>Employee Request Portal</h2>
+
+<!-- Login Section -->
+<div id="login">
+    <label>Employee ID:</label><br>
+    <input type="text" id="empID" placeholder="Enter Employee ID"><br>
+    <label>Password:</label><br>
+    <input type="password" id="password" placeholder="Enter Password"><br>
+    <button onclick="login()">Login</button>
+    <div id="loginMsg"></div>
+</div>
+
+<!-- Portal Section -->
+<div id="portal" class="hidden">
+    <h3>Welcome, <span id="userName"></span></h3>
+
+    <!-- Submit Request -->
+    <h4>Submit Request</h4>
+    <label>Request Type:</label><br>
+    <select id="reqType">
+        <option value="Leave">Leave</option>
+        <option value="HR">HR Request</option>
+        <option value="IT">IT Request</option>
+    </select><br>
+    <label>Details:</label><br>
+    <textarea id="reqDetails" rows="3" cols="50" placeholder="Enter request details"></textarea><br>
+    <button onclick="submitRequest()">Submit Request</button>
+    <div id="submitMsg"></div>
+
+    <!-- Check Status -->
+    <h4>Check My Requests</h4>
+    <button onclick="checkStatus()">Refresh Status</button>
+    <div id="statusTable"></div>
+
+    <br><button onclick="logout()">Logout</button>
+</div>
+
+<script>
+// ======= Dummy data for testing =======
+let sheetData = [
+    {id: '1001', pwd: '1234', name:'John Doe', type:'Leave', details:'Vacation', date:'2025-09-15', status:'Pending', notes:''},
+    {id: '1002', pwd: 'abcd', name:'Jane Smith', type:'IT', details:'Laptop issue', date:'2025-09-14', status:'Approved', notes:'Done'}
+];
+
+let currentUser = null;
+
+// ======= Login Function =======
+function login() {
+    const empID = document.getElementById('empID').value;
+    const pwd = document.getElementById('password').value;
+    currentUser = sheetData.find(r => r.id === empID && r.pwd === pwd);
+
+    if(currentUser){
+        document.getElementById('login').classList.add('hidden');
+        document.getElementById('portal').classList.remove('hidden');
+        document.getElementById('userName').innerText = currentUser.name;
+        checkStatus();
+        document.getElementById('loginMsg').innerText = '';
+    } else {
+        document.getElementById('loginMsg').innerText = 'Invalid Employee ID or Password';
+    }
+}
+
+// ======= Logout Function =======
+function logout() {
+    currentUser = null;
+    document.getElementById('portal').classList.add('hidden');
+    document.getElementById('login').classList.remove('hidden');
+    document.getElementById('empID').value = '';
+    document.getElementById('password').value = '';
+}
+
+// ======= Submit Request Function =======
+function submitRequest() {
+    const type = document.getElementById('reqType').value;
+    const details = document.getElementById('reqDetails').value;
+    if(details.trim() === '') {
+        alert("Please enter request details.");
+        return;
+    }
+    const date = new Date().toISOString().split('T')[0];
+
+    // Add new request to dummy data (replace with API call in production)
+    sheetData.push({
+        id: currentUser.id,
+        pwd: currentUser.pwd,
+        name: currentUser.name,
+        type: type,
+        details: details,
+        date: date,
+        status: 'Pending',
+        notes: ''
+    });
+
+    document.getElementById('submitMsg').innerText = 'Request submitted successfully!';
+    document.getElementById('reqDetails').value = '';
+    checkStatus();
+}
+
+// ======= Check Status Function =======
+function checkStatus() {
+    const requests = sheetData.filter(r => r.id === currentUser.id);
+    if(requests.length === 0){
+        document.getElementById('statusTable').innerHTML = 'No requests found.';
+        return;
+    }
+    let html = '<table><tr><th>Type</th><th>Details</th><th>Date</th><th>Status</th><th>Notes</th></tr>';
+    requests.forEach(r => {
+        html += `<tr>
+                    <td>${r.type}</td>
+                    <td>${r.details}</td>
+                    <td>${r.date}</td>
+                    <td>${r.status}</td>
+                    <td>${r.notes}</td>
+                 </tr>`;
+    });
+    html += '</table>';
+    document.getElementById('statusTable').innerHTML = html;
+}
+</script>
+</body>
+</html>
