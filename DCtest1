@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Internal Request Form</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; }
+    h2 { color: #2c3e50; }
+    label { font-weight: bold; }
+    input, textarea { width: 100%; padding: 8px; margin: 6px 0; }
+    button { padding: 10px 20px; background: #3498db; color: white; border: none; cursor: pointer; }
+    button:hover { background: #2980b9; }
+    .container { max-width: 500px; margin: auto; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Internal Request Form</h2>
+    <form action="submit.php" method="POST">
+      <label for="name">Name:</label><br>
+      <input type="text" name="name" id="name" required><br>
+
+      <label for="department">Department:</label><br>
+      <input type="text" name="department" id="department" required><br>
+
+      <label for="request">Request:</label><br>
+      <textarea name="request" id="request" rows="4" required></textarea><br>
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+</body>
+</html>
